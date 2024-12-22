@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Inventory Dashboard</h1>
+    <form id="item-form">
+      <input type="text" id="name" placeholder="Item Name" required />
+      <input type="text" id="description" placeholder="Description" />
+      <input type="number" id="quantity" placeholder="Quantity" required />
+      <select id="status">
+        <option value="in-stock">In Stock</option>
+        <option value="out-of-stock">Out of Stock</option>
+      </select>
+      <button type="submit">Add Item</button>
+    </form>
+
+    <div id="inventory">
+      <!-- Inventory items will be rendered here -->
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
