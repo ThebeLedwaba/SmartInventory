@@ -1,63 +1,165 @@
-// app.js
+// Configuration
+const API_URL = '/api/inventory';
+const STATUS_OPTIONS = {
+  'in-stock': 'In Stock',
+  'out-of-stock': 'Out of Stock',
+  'maintenance': 'In Maintenance'
+};
 
-// API endpoint base URL
-const API_URL = "/api/inventory";
+// DOM Elements
+const inventoryDiv = document.getElementById('inventory');
+const itemForm = document.getElementById('item-form');
+const searchInput = document.getElementById('search');
+const statusFilter = document.getElementById('status-filter');
+const minQuantityFilter = document.getElementById('min-quantity');
+const errorDiv = document.getElementById('error-message');
 
-// Fetch and display items
-async function fetchItems() {
-  const response = await fetch(API_URL);
-  const items = await response.json();
-  const inventoryDiv = document.getElementById("inventory");
-  inventoryDiv.innerHTML = "";
-
-  items.forEach(item => {
-    const itemDiv = document.createElement("div");
-    itemDiv.className = "item";
-    itemDiv.innerHTML = `
-      <span>${item.name} - ${item.description} (Qty: ${item.quantity}) - ${item.status}</span>
-      <button class="edit" onclick="editItem('${item._id}')">Edit</button>
-      <button class="delete" onclick="deleteItem('${item._id}')">Delete</button>
-    `;
-    inventoryDiv.appendChild(itemDiv);
-  });
+// Helper functions
+function displayError(message) {
+  errorDiv.textContent = message;
+  errorDiv.style.display = 'block';
+  setTimeout(() => errorDiv.style.display = 'none', 5000);
 }
 
-// Add a new item
-document.getElementById("item-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const name = document.getElementById("name").value;
-  const description = document.getElementById("description").value;
-  const quantity = document.getElementById("quantity").value;
-  const status = document.getElementById("status").value;
-
-  await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, description, quantity, status })
-  });
-
-  document.getElementById("item-form").reset();
-  fetchItems();
-});
-
-// Delete an item
-async function deleteItem(id) {
-  await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-  fetchItems();
+function formatStatus(status) {
+  return STATUS_OPTIONS[status] || status;
 }
 
-// Edit an item
-async function editItem(id) {
-  const newQuantity = prompt("Enter new quantity:");
-  if (newQuantity) {
-    await fetch(`${API_URL}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quantity: newQuantity })
+async function handleApiCall(url, options = {}) {
+  try {
+    const response = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options
     });
-    fetchItems();
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Request failed');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    displayError(error.message);
+    throw error;
   }
 }
 
-// Initial load of items
-fetchItems();
+// Fetch and display items with filters
+async function fetchItems() {
+  try {
+    const params = new URLSearchParams();
+    if (statusFilter.value) params.append('status', statusFilter.value);
+    if (minQuantityFilter.value) params.append('minQuantity', minQuantityFilter.value);
+    if (searchInput.value) params.append('search', searchInput.value);
+    
+    const queryString = params.toString();
+    const url = queryString ? `${API_URL}?${queryString}` : API_URL;
+    
+    const items = await handleApiCall(url);
+    
+    inventoryDiv.innerHTML = items.length === 0 
+      ? '<div class="no-items">No items found</div>'
+      : items.map(item => `
+          <div class="item" data-id="${item._id}">
+            <div class="item-info">
+              <h3>${item.name}</h3>
+              <p>${item.description || 'No description'}</p>
+              <div class="item-meta">
+                <span class="quantity">Quantity: ${item.quantity}</span>
+                <span class="status ${item.status}">${formatStatus(item.status)}</span>
+              </div>
+            </div>
+            <div class="item-actions">
+              <button class="edit" onclick="openEditModal('${item._id}')">Edit</button>
+              <button class="delete" onclick="confirmDelete('${item._id}')">Delete</button>
+            </div>
+          </div>
+        `).join('');
+  } catch (error) {
+    console.error('Error fetching items:', error);
+  }
+}
+
+// Add a new item
+itemForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData(itemForm);
+  const itemData = {
+    name: formData.get('name').trim(),
+    description: formData.get('description').trim(),
+    quantity: parseInt(formData.get('quantity')),
+    status: formData.get('status')
+  };
+  
+  try {
+    await handleApiCall(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(itemData)
+    });
+    
+    itemForm.reset();
+    fetchItems();
+  } catch (error) {
+    console.error('Error adding item:', error);
+  }
+});
+
+// Delete an item with confirmation
+async function confirmDelete(id) {
+  if (!confirm('Are you sure you want to delete this item?')) return;
+  
+  try {
+    await handleApiCall(`${API_URL}/${id}`, { method: 'DELETE' });
+    fetchItems();
+  } catch (error) {
+    console.error('Error deleting item:', error);
+  }
+}
+
+// Open edit modal
+function openEditModal(id) {
+  // In a real app, you would implement a proper modal
+  const newName = prompt('Enter new name:');
+  const newQuantity = prompt('Enter new quantity:');
+  const newStatus = prompt('Enter new status (in-stock, out-of-stock, maintenance):');
+  
+  if (newName || newQuantity || newStatus) {
+    updateItem(id, {
+      ...(newName && { name: newName }),
+      ...(newQuantity && { quantity: parseInt(newQuantity) }),
+      ...(newStatus && { status: newStatus })
+    });
+  }
+}
+
+// Update an item
+async function updateItem(id, updates) {
+  try {
+    await handleApiCall(`${API_URL}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates)
+    });
+    fetchItems();
+  } catch (error) {
+    console.error('Error updating item:', error);
+  }
+}
+
+// Filter event listeners
+searchInput.addEventListener('input', debounce(fetchItems, 300));
+statusFilter.addEventListener('change', fetchItems);
+minQuantityFilter.addEventListener('change', fetchItems);
+
+// Debounce helper for search
+function debounce(func, wait) {
+  let timeout;
+  return function() {
+    const context = this, args = arguments;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
+// Initial load
+document.addEventListener('DOMContentLoaded', fetchItems);
