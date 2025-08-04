@@ -1,11 +1,39 @@
-// models/Item.js
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const ItemSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: String,
-  quantity: { type: Number, required: true, min: 0 },
-  status: { type: String, enum: ["in-stock", "out-of-stock"], default: "in-stock" },
+  name: { 
+    type: String, 
+    required: [true, 'Item name is required'],
+    trim: true,
+    maxlength: [100, 'Name cannot be more than 100 characters']
+  },
+  description: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Description cannot be more than 500 characters']
+  },
+  quantity: { 
+    type: Number, 
+    required: [true, 'Quantity is required'],
+    min: [0, 'Quantity cannot be negative']
+  },
+  status: { 
+    type: String, 
+    enum: {
+      values: ['in-stock', 'out-of-stock', 'maintenance'],
+      message: 'Status is either in-stock, out-of-stock, or maintenance'
+    },
+    default: 'in-stock'
+  },
+  lastUpdated: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
 });
 
-module.exports = mongoose.model("Item", ItemSchema);
+// Add text index for searching
+ItemSchema.index({ name: 'text', description: 'text' });
+
+module.exports = mongoose.model('Item', ItemSchema);
