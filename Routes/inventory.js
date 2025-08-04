@@ -1,49 +1,96 @@
-// routes/inventory.js
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const Item = require("../models/Item");
+const { check, validationResult } = require('express-validator');
+const Item = require('../models/Item');
 
-// GET all items
-router.get("/", async (req, res) => {
+// Validation middleware
+const validateItem = [
+  check('name').trim().notEmpty().withMessage('Name is required'),
+  check('quantity').isInt({ min: 0 }).withMessage('Quantity must be a positive integer'),
+  check('status').isIn(['in-stock', 'out-of-stock', 'maintenance']).withMessage('Invalid status')
+];
+
+// GET all items with optional filtering
+router.get('/', async (req, res) => {
   try {
-    const items = await Item.find();
+    const { status, minQuantity } = req.query;
+    const filter = {};
+    
+    if (status) filter.status = status;
+    if (minQuantity) filter.quantity = { $gte: parseInt(minQuantity) };
+    
+    const items = await Item.find(filter).sort({ name: 1 });
     res.json(items);
   } catch (error) {
-    res.status(500).json({ error: "Error fetching items" });
+    console.error(error);
+    res.status(500).json({ error: 'Server error while fetching items' });
   }
 });
 
 // POST a new item
-router.post("/", async (req, res) => {
+router.post('/', validateItem, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { name, description, quantity, status } = req.body;
-    const newItem = new Item({ name, description, quantity, status });
+    const newItem = new Item({ 
+      name: name.trim(),
+      description: description ? description.trim() : '',
+      quantity,
+      status: status || 'in-stock'
+    });
+    
     await newItem.save();
     res.status(201).json(newItem);
   } catch (error) {
-    res.status(500).json({ error: "Error adding item" });
+    console.error(error);
+    res.status(500).json({ error: 'Server error while adding item' });
   }
 });
 
 // PUT to update an item
-router.put("/:id", async (req, res) => {
+router.put('/:id', validateItem, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { id } = req.params;
-    const updatedItem = await Item.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedItem = await Item.findByIdAndUpdate(
+      id, 
+      req.body, 
+      { new: true, runValidators: true }
+    );
+    
+    if (!updatedItem) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    
     res.json(updatedItem);
   } catch (error) {
-    res.status(500).json({ error: "Error updating item" });
+    console.error(error);
+    res.status(500).json({ error: 'Server error while updating item' });
   }
 });
 
 // DELETE an item
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    await Item.findByIdAndDelete(id);
-    res.json({ message: "Item deleted" });
+    const deletedItem = await Item.findByIdAndDelete(id);
+    
+    if (!deletedItem) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    
+    res.json({ message: 'Item deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: "Error deleting item" });
+    console.error(error);
+    res.status(500).json({ error: 'Server error while deleting item' });
   }
 });
 
