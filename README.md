@@ -1,45 +1,34 @@
-https://img.shields.io/badge/status-active-success.svg
-https://img.shields.io/badge/node-%253E%253D16.0.0-blue.svg
-https://img.shields.io/badge/react-18.0-blue.svg
-https://img.shields.io/badge/typescript-5.0-blue.svg
-https://img.shields.io/badge/license-MIT-blue.svg
-https://img.shields.io/badge/tests-passing-green.svg
+🧠 Smart Inventory Management System
 
-A modern, full-stack inventory management solution for tracking tools and equipment with real-time capabilities, advanced analytics, and mobile-first design.
+A modern, full-stack inventory management solution for tracking tools and equipment with real-time capabilities, predictive analytics, and a mobile-first design.
 
-Enhanced Features
-Core Inventory Management
-Smart Item Management: Add, edit, delete, and categorize inventory items with bulk operations
+🚀 Key Features
+🧩 Core Inventory Management
 
-Real-Time Dashboard: Live monitoring with WebSocket support for instant updates
+Smart Item Management: Add, edit, delete, and categorize inventory items (supports bulk operations)
 
-Advanced Search & Filter: Full-text search, advanced filtering, and saved search queries
+Real-Time Dashboard: Live monitoring with WebSocket support
 
-QR Code Integration: Generate and scan QR codes for quick item identification
+Advanced Search & Filter: Full-text search with advanced filtering
 
-Barcode Support: Barcode generation and scanning capabilities
+QR/Barcode Integration: Generate and scan codes for quick identification
 
-Advanced Capabilities
-Inventory Analytics: Dashboard with charts, trends, and usage analytics
+📊 Advanced Capabilities
 
-Predictive Restocking: AI-powered low stock alerts and purchase suggestions
+Inventory Analytics: Charts, usage trends, and AI insights
 
-Multi-Location Support: Manage inventory across multiple storerooms/workshops
+Predictive Restocking: AI-powered stock alerts and restock suggestions
 
-User Management: Role-based access control (Admin, Manager, Viewer)
+Multi-Location Support: Manage multiple storerooms or workshops
 
-Audit Trail: Complete history of all inventory changes
+User Roles: Admin, Manager, and Viewer access control
 
-Reporting: Generate PDF/Excel reports for inventory audits
+Audit Trail: Full history of all inventory changes
 
-Technical Enhancements
-Progressive Web App (PWA): Installable mobile app with offline functionality
+Reports: Exportable PDF/Excel audit reports
 
-Real-time Notifications: Browser notifications for low stock and important events
-
-Data Import/Export: CSV/Excel import and export functionality
-System Architecture
-1. System Architecture Overview
+🏗️ System Architecture
+1️⃣ Overview
 graph TB
     subgraph Frontend
         A[React PWA]
@@ -54,672 +43,299 @@ graph TB
         G[Authentication]
         H[Rate Limiting]
     end
-2. Activity Diagram - Inventory Management Process
+
+    A --> E
+    B --> F
+    C --> G
+    D --> H
+
+2️⃣ Activity Diagram – Inventory Management Flow
+
 flowchart TD
     Start([Start]) --> Login[User Login]
-    Login --> Auth{Authentication<br>Successful?}
+    Login --> Auth{Authenticated?}
     Auth -->|No| Error[Show Error Message]
     Auth -->|Yes| Dashboard[Load Dashboard]
-    
     Dashboard --> Menu{User Action}
-    
     Menu -->|View Items| Browse[Browse Inventory]
     Menu -->|Add Item| AddItem[Add New Item]
-    Menu -->|Search| Search[Search Items]
     Menu -->|Reports| GenerateReports[Generate Reports]
-    
-    Browse --> BrowseAction{Select Action}
-    BrowseAction -->|Edit| EditItem[Edit Item]
-    BrowseAction -->|Delete| DeleteItem[Delete Item]
-    BrowseAction -->|Checkout| Checkout[Checkout Item]
-    
-    AddItem --> ValidateAdd{Data Valid?}
+
+    Browse --> Action{Action?}
+    Action -->|Edit| EditItem[Edit Item]
+    Action -->|Delete| DeleteItem[Delete Item]
+    Action -->|Checkout| Checkout[Checkout Item]
+
+    AddItem --> ValidateAdd{Valid Data?}
     ValidateAdd -->|No| ShowAddError[Show Validation Error]
-    ValidateAdd -->|Yes| SaveAdd[Save to Database]
-    
-    EditItem --> ValidateEdit{Data Valid?}
+    ValidateAdd -->|Yes| SaveAdd[Save to DB]
+
+    EditItem --> ValidateEdit{Valid Data?}
     ValidateEdit -->|No| ShowEditError[Show Validation Error]
-    ValidateEdit -->|Yes| SaveEdit[Update Database]
-    
-    DeleteItem --> ConfirmDelete{Confirm Deletion?}
-    ConfirmDelete -->|No| CancelDelete[Cancel Operation]
-    ConfirmDelete -->|Yes| ExecuteDelete[Delete from DB]
-    
+    ValidateEdit -->|Yes| SaveEdit[Update DB]
+
+    DeleteItem --> ConfirmDel{Confirm Delete?}
+    ConfirmDel -->|No| CancelDel[Cancel]
+    ConfirmDel -->|Yes| ExecuteDel[Delete from DB]
+
     Checkout --> UpdateQty[Update Quantity]
-    UpdateQty --> LogActivity[Log Activity]
-    
-    SaveAdd --> LogActivity
-    SaveEdit --> LogActivity
-    ExecuteDelete --> LogActivity
-    
-    LogActivity --> UpdateUI[Update User Interface]
+    UpdateQty --> Log[Log Activity]
+    SaveAdd --> Log
+    SaveEdit --> Log
+    ExecuteDel --> Log
+    Log --> UpdateUI[Update UI]
     UpdateUI --> Menu
-    
-    Search --> DisplayResults[Display Results]
-    DisplayResults --> Menu
-    
-    GenerateReports --> Export{Export Format?}
-    Export -->|PDF| GeneratePDF[Generate PDF Report]
-    Export -->|Excel| GenerateExcel[Generate Excel Report]
-    GeneratePDF --> Download[Download Report]
-    GenerateExcel --> Download
-    Download --> Menu
-    
     Error --> Login
-    ShowAddError --> AddItem
-    ShowEditError --> EditItem
-    CancelDelete --> Browse
-3. Database Schema Design
+
+3️⃣ Database Schema Design
 erDiagram
     USERS ||--o{ INVENTORY_ITEMS : manages
     USERS ||--o{ ACTIVITY_LOGS : performs
     CATEGORIES ||--o{ INVENTORY_ITEMS : categorizes
     INVENTORY_ITEMS ||--o{ ITEM_TRANSACTIONS : tracks
     LOCATIONS ||--o{ INVENTORY_ITEMS : stores
-    
+
     USERS {
-        string _id ObjectId
-        string email String
-        string password Hash
-        string role String
-        string firstName String
-        string lastName String
-        date createdAt DateTime
-        date updatedAt DateTime
-        boolean isActive Boolean
+        string _id
+        string email
+        string password
+        string role
+        string firstName
+        string lastName
+        date createdAt
+        date updatedAt
+        boolean isActive
     }
-    
-    CATEGORIES {
-        string _id ObjectId
-        string name String
-        string description String
-        string color String
-        date createdAt DateTime
-    }
-    
-    LOCATIONS {
-        string _id ObjectId
-        string name String
-        string address String
-        string contactPerson String
-        string phone String
-        boolean isActive Boolean
-    }
-    
+
     INVENTORY_ITEMS {
-        string _id ObjectId
-        string name String
-        string description String
-        string sku String
-        string categoryId ObjectId
-        string locationId ObjectId
-        number quantity Number
-        number minQuantity Number
-        number maxQuantity Number
-        number price Number
-        string supplier String
-        string qrCode String
-        string barcode String
-        string status String
-        string imageUrl String
-        date lastRestocked DateTime
-        date createdAt DateTime
-        date updatedAt DateTime
+        string _id
+        string name
+        string description
+        string categoryId
+        string locationId
+        number quantity
+        number price
+        string status
+        string qrCode
+        date lastRestocked
     }
-    
-    ITEM_TRANSACTIONS {
-        string _id ObjectId
-        string itemId ObjectId
-        string userId ObjectId
-        string type String
-        number quantityChanged Number
-        number previousQuantity Number
-        number newQuantity Number
-        string reason String
-        string notes String
-        date createdAt DateTime
-    }
-    
-    ACTIVITY_LOGS {
-        string _id ObjectId
-        string userId ObjectId
-        string action String
-        string resource String
-        string resourceId ObjectId
-        json oldData JSON
-        json newData JSON
-        string ipAddress String
-        date createdAt DateTime
-    }
-4. Component Architecture (Frontend)
-   graph TD
+
+4️⃣ Component Architecture (Frontend)
+graph TD
     subgraph "React Application"
-        A[App Root]
-        B[Routing]
-        C[Authentication Provider]
-        
-        subgraph "Layout Components"
-            D[Navbar]
-            E[Sidebar]
-            F[Footer]
-        end
-        
-        subgraph "Page Components"
-            G[Dashboard]
-            H[Inventory]
-            I[Items Management]
-            J[Reports]
-            K[Settings]
-        end
-        
+        A[App Root] --> B[Routing]
+        B --> C[Dashboard]
+        B --> D[Inventory]
+        B --> E[Reports]
+        B --> F[Settings]
         subgraph "Shared Components"
-            L[DataTable]
-            M[SearchBar]
-            N[Pagination]
-            O[Modal]
-            P[Notification]
+            X[DataTable]
+            Y[SearchBar]
+            Z[Pagination]
+            W[Modal]
         end
-        
         subgraph "State Management"
             Q[Redux Store]
             R[API Slice]
             S[Inventory Slice]
             T[Auth Slice]
         end
-        
         subgraph "Custom Hooks"
             U[useInventory]
             V[useAuth]
-            W[useWebSocket]
-            X[useLocalStorage]
+            W2[useWebSocket]
         end
     end
-    
-    A --> B
-    A --> C
-    B --> G
-    B --> H
-    B --> I
-    B --> J
-    B --> K
-    C --> Q
+    A --> Q
     Q --> R
     Q --> S
     Q --> T
-    G --> U
-    H --> U
-    I --> U
-    U --> R
-5. API Architecture Design
- flowchart TD
+    D --> U
+    C --> V
+
+5️⃣ API Architecture
+flowchart TD
     subgraph "Client Layer"
-        A[Web Browser]
+        A[Browser]
         B[Mobile App]
-        C[Third-party Apps]
     end
-    
+
     subgraph "API Gateway"
         D[Load Balancer]
         E[Rate Limiter]
         F[CORS Handler]
-        G[Request Logger]
+        G[Logger]
     end
-    
-    subgraph "Application Layer"
+
+    subgraph "App Layer"
         H[Auth Controller]
         I[Inventory Controller]
         J[Reports Controller]
-        K[Users Controller]
     end
-    
+
     subgraph "Service Layer"
         L[Auth Service]
         M[Inventory Service]
         N[Report Service]
-        O[Notification Service]
     end
-    
-    subgraph "Data Access Layer"
-        P[MongoDB Repository]
+
+    subgraph "Data Layer"
+        P[MongoDB]
         Q[Redis Cache]
-        R[File Storage]
     end
-    
-    subgraph "External Services"
-        S[Email Service]
-        T[QR Code Service]
-        U[Cloud Storage]
-    end
-    
+
     A --> D
     B --> D
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-    G --> I
-    G --> J
-    G --> K
-    H --> L
-    I --> M
-    J --> N
-    K --> L
-    L --> P
-    M --> P
+    D --> E --> F --> G
+    G --> H --> L --> P
+    G --> I --> M --> P
+    G --> J --> N --> P
     M --> Q
-    N --> P
-    N --> R
-    O --> S
-    M --> T
-    R --> U
-6. Sequence Diagram - Item Checkout Process
- sequenceDiagram
+
+6️⃣ Sequence Diagram – Item Checkout
+sequenceDiagram
     participant U as User
     participant FE as Frontend
-    participant API as Backend API
+    participant API as Backend
     participant DB as Database
     participant WS as WebSocket
-    participant N as Notification Service
-    
+
     U->>FE: Click "Checkout Item"
     FE->>API: POST /api/items/{id}/checkout
-    API->>API: Validate JWT Token
-    API->>DB: Find item by ID
-    DB-->>API: Return item data
-    
-    alt Item not found or insufficient quantity
-        API-->>FE: Return error
-        FE-->>U: Show error message
-    else Valid request
-        API->>DB: Update item quantity
-        API->>DB: Create transaction record
-        API->>DB: Create activity log
-        DB-->>API: Confirm operations
-        
-        par Real-time Updates
-            API->>WS: Broadcast inventory update
-            WS->>FE: Push update to all clients
-        and Notifications
-            API->>N: Check for low stock
-            alt Low stock detected
-                N->>N: Send low stock alert
-            end
-        end
-        
-        API-->>FE: Success response
-        FE-->>U: Show success message
-        FE->>FE: Update local state
+    API->>DB: Find item
+    alt Invalid item
+        API-->>FE: Error
+    else Valid item
+        API->>DB: Update quantity
+        API->>DB: Log transaction
+        API->>WS: Broadcast update
+        WS->>FE: Refresh UI
+        FE-->>U: Success Message
     end
 
-RESTful API: Well-documented API with Swagger/OpenAPI specification
-
-Dark Mode: Toggle between light and dark themes
-7. Deployment Architecture
+7️⃣ Deployment Architecture
 graph TB
     subgraph "Production Environment"
-        subgraph "Load Balancer"
-            A[NGINX LB]
+        subgraph LB
+            A[NGINX Load Balancer]
         end
-        
-        subgraph "Application Servers"
+        subgraph "App Servers"
             B[App Server 1]
             C[App Server 2]
-            D[App Server N]
         end
-        
         subgraph "Database Cluster"
-            E[MongoDB Primary]
-            F[MongoDB Secondary 1]
-            G[MongoDB Secondary 2]
+            D[MongoDB Primary]
+            E[MongoDB Secondary]
         end
-        
-        subgraph "Cache Layer"
-            H[Redis Cluster]
+        subgraph "Cache"
+            F[Redis Cluster]
         end
-        
-        subgraph "File Storage"
-            I[Cloud Storage<br>S3/Cloudinary]
-        end
-        
-        subgraph "Monitoring"
-            J[Prometheus]
-            K[Grafana]
-            L[Log Aggregation]
+        subgraph "Storage"
+            G[Cloud Storage S3]
         end
     end
-    
     A --> B
     A --> C
-    A --> D
-    B --> E
-    C --> E
+    B --> D
     D --> E
-    E --> F
-    E --> G
-    B --> H
-    C --> H
-    D --> H
-    B --> I
-    B --> J
-    C --> J
-    D --> J
-    J --> K
-8. Security Architecture
-   ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   CLIENT LAYER  │    │  APPLICATION    │    │   DATA LAYER    │
-│                 │    │     LAYER       │    │                 │
-│ • Input         │    │ • JWT Validation│    │ • Encryption    │
-│   Validation    │◄──►│ • Rate Limiting │◄──►│   at Rest       │
-│ • XSS Prevention│    │ • SQL Injection │    │ • Access Control│
-│ • CSRF Tokens   │    │   Prevention    │    │ • Audit Logging │
-│                 │    │ • Input Sanit.  │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-🛠 Technology Stack
-Frontend (Modernized)
-React 18 with TypeScript
+    B --> F
+    B --> G
 
-Tailwind CSS for styling
+8️⃣ Security Architecture
+graph TD
+    subgraph "Client Layer"
+        A[Input Validation]
+        B[XSS/CSRF Prevention]
+    end
+    subgraph "App Layer"
+        C[JWT Validation]
+        D[Rate Limiting]
+        E[Input Sanitization]
+    end
+    subgraph "Data Layer"
+        F[Encryption at Rest]
+        G[Access Control]
+        H[Audit Logs]
+    end
+    A --> C
+    B --> C
+    C --> F
+    D --> G
+    E --> H
 
-Redux Toolkit for state management
+🧱 Tech Stack
+Layer	Technologies
 
-React Query for server state
+Frontend	React 18, TypeScript, Tailwind CSS, Redux Toolkit, Chart.js
 
-Chart.js for analytics dashboard
+Backend	Node.js, Express.js, MongoDB, Redis, Socket.io
 
-PWA capabilities with service workers
+Security	JWT, bcrypt, Helmet, Rate Limiting
 
-Backend (Enhanced)
-Node.js with Express.js and TypeScript
+DevOps	Docker, GitHub Actions, Jest, ESLint, Prettier
 
-MongoDB with Mongoose ODM
-
-Redis for caching and session storage
-
-Socket.io for real-time features
-
-JWT authentication with refresh tokens
-
-Rate limiting and advanced security
-
-DevOps & Quality
-Docker containerization
-
-CI/CD with GitHub Actions
-
-Jest and React Testing Library
-
-ESLint + Prettier for code quality
-
-Husky for git hooks
-
-Quick Start
-Prerequisites
-Node.js 16+
-
-MongoDB 4.4+
-
-Redis 6+ (optional, for enhanced performance)
-
-Installation
-Clone and setup:
-
+⚡ Quick Start
+# Clone and install
 
 git clone https://github.com/ThebeLedwaba/SmartInventory.git
-cd SmartInventory
-Environment configuration:
 
-cp .env.example .env
-# Configure your environment variables
-Install dependencies:
+cd SmartInventory && npm install
 
-# Install root dependencies (if using monorepo)
-npm install
+cd client && npm install && cd ../server && npm install
 
-# Install client dependencies
-cd client && npm install
-
-# Install server dependencies  
-cd ../server && npm install
-Start development servers:
-
-# Start both client and server (from root)
+# Run
 npm run dev
 
-# Or start separately:
-# Terminal 1: cd server && npm run dev
-# Terminal 2: cd client && npm start
-Access the application:
 
-Frontend: http://localhost:3000
+Access:
+Frontend → http://localhost:3000
 
-Backend API: http://localhost:5000
+Backend → http://localhost:5000
 
-API Documentation: http://localhost:5000/api-docs
+Swagger Docs → http://localhost:5000/api-docs
 
-Project Structure
-text
-SmartInventory/
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/        # Page components
-│   │   ├── hooks/        # Custom React hooks
-│   │   ├── store/        # Redux store
-│   │   ├── utils/        # Utility functions
-│   │   └── types/        # TypeScript definitions
-├── server/                # Node.js backend
-│   ├── src/
-│   │   ├── controllers/  # Route controllers
-│   │   ├── models/       # MongoDB models
-│   │   ├── routes/       # API routes
-│   │   ├── middleware/   # Custom middleware
-│   │   └── utils/        # Utility functions
-├── shared/               # Shared code between frontend/backend
-├── docs/                # Documentation
-└── docker/              # Docker configuration
-API Endpoints
-Authentication
-POST /api/auth/login - User login
-
-POST /api/auth/register - User registration
-
-POST /api/auth/refresh - Refresh token
-
-POST /api/auth/logout - User logout
-
-Inventory Management
-GET /api/items - Get all items (with pagination/filtering)
-
-POST /api/items - Create new item
-
-GET /api/items/:id - Get item by ID
-
-PUT /api/items/:id - Update item
-
-DELETE /api/items/:id - Delete item
-
-POST /api/items/:id/checkout - Checkout item
-
-POST /api/items/:id/restock - Restock item
-
-Reports & Analytics
-GET /api/reports/inventory - Inventory summary report
-
-GET /api/reports/transactions - Transaction history
-
-GET /api/reports/analytics - Usage analytics
-
-POST /api/reports/export - Export data
-
-Testing
-
-# Run all tests
+🧪 Testing
 npm test
-
-# Run tests with coverage
 npm run test:coverage
 
-# Run e2e tests
-npm run test:e2e
-
-# Run specific test suites
-npm run test:client    # Frontend tests
-npm run test:server    # Backend tests
-npm run test:integration  # Integration tests
-
-Docker Deployment
-Development
-
-# Build and run with Docker Compose
+🐳 Docker Deployment
+# Development
 docker-compose up -d
 
-# View logs
-docker-compose logs -f
-Production
-
-# Production build
+# Production
 docker-compose -f docker-compose.prod.yml up -d
 
-# Scale services
-docker-compose up -d --scale app=3
-Environment Variables
-env
-# Database
-MONGODB_URI=mongodb://localhost:27017/smartinventory
-REDIS_URL=redis://localhost:6379
+🔒 Security Highlights
 
-# JWT
-JWT_SECRET=your-jwt-secret
-JWT_EXPIRES_IN=7d
+JWT + Refresh Tokens
 
-# Application
-NODE_ENV=development
-PORT=5000
-CLIENT_URL=http://localhost:3000
+Role-Based Access Control (RBAC)
 
-# Email (Optional)
-SMTP_HOST=your-smtp-host
-SMTP_PORT=587
-SMTP_USER=your-email
-SMTP_PASS=your-password
-API Documentation
-Once running, access the interactive API documentation at:
+HTTPS (TLS)
 
-Swagger UI: http://localhost:5000/api-docs
+Input Validation & Sanitization
 
-OpenAPI Spec: http://localhost:5000/api-docs/json
+XSS & CSRF Protection
 
-Example API Request
-javascript
-// Get inventory items with pagination
-const response = await fetch('/api/items?page=1&limit=10&status=active', {
-  headers: {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  }
-});
+Audit Logs
 
-// Create new item
-const newItem = await fetch('/api/items', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    name: 'Power Drill',
-    category: 'tools',
-    quantity: 15,
-    minQuantity: 5,
-    price: 89.99
-  })
-});
-Performance & Scaling
-Key Requirements:
-Response Time: < 200ms for API calls
+🧑‍💻 Contributing
+git checkout -b feature/new-feature
+npm run lint && npm test
+git commit -m "feat: add new feature"
+git push origin feature/new-feature
 
-Concurrent Users: Support 1000+ simultaneous users
+📄 License
 
-Data Load: Handle 100,000+ inventory items
+Licensed under the MIT License – see the LICENSE
+ file.
 
-Uptime: 99.9% availability
+📬 Support
 
-Optimization Strategies:
-Database indexing on frequently queried fields
-
-Redis caching for inventory lists and reports
-
-CDN for static assets and images
-
-Query optimization with MongoDB aggregation pipeline
-
-Horizontal scaling with load balancers
-
-Security Measures
-Authentication & Authorization
-JWT-based authentication with refresh tokens
-
-Role-based access control (RBAC)
-
-Password hashing with bcrypt
-
-Session management with secure cookies
-
-Data Protection
-Encryption at rest (MongoDB)
-
-SSL/TLS for data in transit
-
-Input validation and sanitization
-
-SQL injection prevention
-
-XSS and CSRF protection
-
-Monitoring & Auditing
-Comprehensive activity logging
-
-Security event monitoring
-
-Regular security audits
-
-Penetration testing
-
-Contributing
-Fork the repository
-
-Create a feature branch: git checkout -b feature/amazing-feature
-
-Commit changes: git commit -m 'Add amazing feature'
-
-Push to branch: git push origin feature/amazing-feature
-
-Open a Pull Request
-
-Development Workflow
-bash
-# Create new feature
-git checkout -b feature/new-inventory-feature
-
-# Make changes and test
-npm run test
-npm run lint
-
-# Commit changes
-git add .
-git commit -m "feat: add new inventory filtering system"
-
-# Push and create PR
-git push origin feature/new-inventory-feature
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-Support
 📧 Email: thebeledwaba@gmail.com
 
 🐛 Issues
 
 💬 Discussions
 
-📚 Documentation
+📚 Documentation in /docs
