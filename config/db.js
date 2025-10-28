@@ -1,88 +1,87 @@
-const mongoose = require('mongoose');
-const logger = require('./logger'); // Optional: for advanced logging
-
-// Configuration options
-const MONGO_OPTIONS = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-  maxPoolSize: 10, // Maintain up to 10 socket connections
-  socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-  family: 4, // Use IPv4, skip IPv6
-};
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 class Database {
-  constructor() {
-    this._connect();
+  private static instance: Database;
+  private mongod: MongoMemoryServer | null = null;
+
+  private constructor() {}
+
+  public static getInstance(): Database {
+    if (!Database.instance) {
+      Database.instance = new Database();
+    }
+    return Database.instance;
   }
 
-  _connect() {
-    mongoose.connect(process.env.MONGO_URI, MONGO_OPTIONS)
-      .then(() => {
-        console.log('MongoDB connection established successfully');
-        
-        // Optional: Log connection metrics
-        this._logConnectionStats();
-      })
-      .catch(error => {
-        console.error('MongoDB connection error:', error.message);
-        
-        // Implement retry logic for production environments
-        if (process.env.NODE_ENV === 'production') {
-          console.log('Retrying connection in 5 seconds...');
-          setTimeout(() => this._connect(), 5000);
-        } else {
-          process.exit(1); // Exit in development for immediate feedback
-        }
-      });
+  public async connect(): Promise<void> {
+    try {
+      let mongoUri = process.env.MONGO_URI;
 
-    // Event listeners for connection monitoring
-    mongoose.connection.on('connected', () => {
-      console.log('Mongoose connected to DB');
-    });
+      // Use in-memory database for testing
+      if (process.env.NODE_ENV === 'test') {
+        this.mongod = await MongoMemoryServer.create();
+        mongoUri = this.mongod.getUri();
+      }
 
-    mongoose.connection.on('error', (err) => {
-      console.error('Mongoose connection error:', err);
-    });
+      if (!mongoUri) {
+        throw new Error('MONGO_URI environment variable is required');
+      }
 
-    mongoose.connection.on('disconnected', () => {
-      console.warn('Mongoose disconnected from DB');
-    });
+      const options = {
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      };
 
-    // Close the Mongoose connection when the Node process ends
-    process.on('SIGINT', this._gracefulExit).on('SIGTERM', this._gracefulExit);
-  }
-
-  _logConnectionStats() {
-    if (process.env.NODE_ENV === 'development') {
-      setInterval(() => {
-        const { hosts, readyState, _connectionString } = mongoose.connection;
-        console.debug(`MongoDB Connection Status:
-          Host: ${hosts}
-          State: ${this._getStateName(readyState)}
-          Connection String: ${_connectionString.replace(/\/\/.*@/, '//****:****@')}
-        `);
-      }, 60000); // Log every minute
+      await mongoose.connect(mongoUri, options);
+      
+      console.log(`✅ MongoDB connected successfully in ${process.env.NODE_ENV} mode`);
+      
+      this.setupEventListeners();
+    } catch (error) {
+      console.error('❌ MongoDB connection error:', error);
+      process.exit(1);
     }
   }
 
-  _getStateName(state) {
-    const states = {
-      0: 'Disconnected',
-      1: 'Connected',
-      2: 'Connecting',
-      3: 'Disconnecting',
-      99: 'Uninitialized'
-    };
-    return states[state] || 'Unknown';
+  public async disconnect(): Promise<void> {
+    try {
+      await mongoose.connection.close();
+      if (this.mongod) {
+        await this.mongod.stop();
+      }
+      console.log('✅ MongoDB disconnected successfully');
+    } catch (error) {
+      console.error('❌ MongoDB disconnection error:', error);
+    }
   }
 
-  _gracefulExit() {
-    mongoose.connection.close(() => {
-      console.log('Mongoose connection closed through app termination');
+  private setupEventListeners(): void {
+    mongoose.connection.on('connected', () => {
+      console.log('📊 Mongoose connected to MongoDB');
+    });
+
+    mongoose.connection.on('error', (error) => {
+      console.error('❌ Mongoose connection error:', error);
+    });
+
+    mongoose.connection.on('disconnected', () => {
+      console.warn('⚠️ Mongoose disconnected from MongoDB');
+    });
+
+    process.on('SIGINT', async () => {
+      await this.disconnect();
       process.exit(0);
     });
   }
+
+  public getConnectionStatus(): string {
+    const states = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+    return states[mongoose.connection.readyState] || 'unknown';
+  }
 }
 
-module.exports = new Database();
+export const connectDB = (): Promise<void> => Database.getInstance().connect();
+export const disconnectDB = (): Promise<void> => Database.getInstance().disconnect();
+export const getDBStatus = (): string => Database.getInstance().getConnectionStatus();
