@@ -1,4 +1,4 @@
-markdown
+
 # 🚀 Smart Inventory System
 
 A modern, full-stack inventory management solution built with React, Node.js, and MongoDB Atlas. Features real-time tracking, advanced filtering, and a beautiful responsive dashboard.
