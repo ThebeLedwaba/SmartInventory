@@ -1,341 +1,244 @@
-🧠 Smart Inventory Management System
+# 🚀 Smart Inventory System
 
-A modern, full-stack inventory management solution for tracking tools and equipment with real-time capabilities, predictive analytics, and a mobile-first design.
+![Inventory Management](https://img.shields.io/badge/status-active-success.svg)
+![Node.js](https://img.shields.io/badge/node-%3E%3D16.0.0-blue.svg)
+![React](https://img.shields.io/badge/react-18.0-blue.svg)
+![TypeScript](https://img.shields.io/badge/typescript-5.0-blue.svg)
+![MongoDB](https://img.shields.io/badge/mongodb-atlas-green.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-🚀 Key Features
-🧩 Core Inventory Management
+A modern, full-stack inventory management solution built with React, Node.js, and MongoDB Atlas. Features real-time tracking, advanced filtering, and a beautiful responsive dashboard.
 
-Smart Item Management: Add, edit, delete, and categorize inventory items (supports bulk operations)
+---
 
-Real-Time Dashboard: Live monitoring with WebSocket support
+## 🌐 Live Demo
 
-Advanced Search & Filter: Full-text search with advanced filtering
+[**View Demo Here**](https://your-demo-link.com) <!-- I will add them in due time  -->
 
-QR/Barcode Integration: Generate and scan codes for quick identification
+---
 
-📊 Advanced Capabilities
+## 🖼️ Screenshots <!-- I will add them in due time  -->
 
-Inventory Analytics: Charts, usage trends, and AI insights
+| Dashboard                            | Inventory Management                 |
+| ------------------------------------ | ------------------------------------ |
+| ![Dashboard](./assets/dashboard.png) | ![Inventory](./assets/inventory.png) |
 
-Predictive Restocking: AI-powered stock alerts and restock suggestions
+> Replace the placeholders above with your actual screenshots.
 
-Multi-Location Support: Manage multiple storerooms or workshops
+---
 
-User Roles: Admin, Manager, and Viewer access control
+## ✨ Features
 
-Audit Trail: Full history of all inventory changes
+### 📊 Dashboard Analytics
 
-Reports: Exportable PDF/Excel audit reports
+- **Real-time Statistics**: Total items, in-stock, out-of-stock, and low stock counts
+- **Visual Metrics**: Beautiful cards with icons and color-coded status
+- **System Monitoring**: Live API and database connection status
 
-🏗️ System Architecture
-1️⃣ Overview
-graph TB
-    subgraph Frontend
-        A[React PWA]
-        B[Redux Store]
-        C[Service Worker]
-        D[WebSocket Client]
-    end
+### 📦 Inventory Management
 
-    subgraph Backend
-        E[Express.js API]
-        F[Socket.io]
-        G[Authentication]
-        H[Rate Limiting]
-    end
+- **Complete CRUD Operations**: Create, read, update, and delete inventory items
+- **Advanced Filtering**: Search by name, filter by status and quantity
+- **Status Tracking**: In-stock, out-of-stock, and maintenance statuses
+- **Quantity Management**: Low stock alerts and inventory tracking
 
-    A --> E
-    B --> F
-    C --> G
-    D --> H
+### 🎨 Modern UI/UX
 
-2️⃣ Activity Diagram – Inventory Management Flow
+- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- **Professional Styling**: Tailwind CSS with beautiful gradients and animations
+- **Interactive Elements**: Hover effects, smooth transitions, and loading states
+- **TypeScript**: Full type safety across frontend and backend
 
+---
+
+## 🛠 Technology Stack
+
+### Frontend
+
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **React Router** for navigation
+- **Vite** for fast development builds
+
+### Backend
+
+- **Node.js** with Express.js
+- **TypeScript** for type safety
+- **MongoDB Atlas** (Cloud Database)
+- **Mongoose** ODM for database operations
+- **Express Validator** for input validation
+
+### DevOps & Tools
+
+- **MongoDB Atlas** for cloud database
+- **Environment Configuration** with dotenv
+- **CORS** enabled for cross-origin requests
+- **Security** with Helmet and rate limiting
+
+---
+
+## 🏗 System Architecture
+
+```mermaid
 flowchart TD
-    Start([Start]) --> Login[User Login]
-    Login --> Auth{Authenticated?}
-    Auth -->|No| Error[Show Error Message]
-    Auth -->|Yes| Dashboard[Load Dashboard]
-    Dashboard --> Menu{User Action}
-    Menu -->|View Items| Browse[Browse Inventory]
-    Menu -->|Add Item| AddItem[Add New Item]
-    Menu -->|Reports| GenerateReports[Generate Reports]
+    A[Frontend: React + TypeScript] -->|API Requests| B[Backend: Node.js + Express]
+    B -->|CRUD Operations| C[Database: MongoDB Atlas]
+    B --> D[Validation & Security: Helmet, Rate Limiting]
+    B --> E[Business Logic]
+    B --> F[API Health Check]
+    A --> G[UI: Dashboard, Inventory Pages]
+Description:
 
-    Browse --> Action{Action?}
-    Action -->|Edit| EditItem[Edit Item]
-    Action -->|Delete| DeleteItem[Delete Item]
-    Action -->|Checkout| Checkout[Checkout Item]
+Frontend communicates with the backend via RESTful APIs
 
-    AddItem --> ValidateAdd{Valid Data?}
-    ValidateAdd -->|No| ShowAddError[Show Validation Error]
-    ValidateAdd -->|Yes| SaveAdd[Save to DB]
+Backend handles business logic, data validation, and MongoDB operations
 
-    EditItem --> ValidateEdit{Valid Data?}
-    ValidateEdit -->|No| ShowEditError[Show Validation Error]
-    ValidateEdit -->|Yes| SaveEdit[Update DB]
+MongoDB Atlas stores inventory data
 
-    DeleteItem --> ConfirmDel{Confirm Delete?}
-    ConfirmDel -->|No| CancelDel[Cancel]
-    ConfirmDel -->|Yes| ExecuteDel[Delete from DB]
+System includes real-time status monitoring and error handling
 
-    Checkout --> UpdateQty[Update Quantity]
-    UpdateQty --> Log[Log Activity]
-    SaveAdd --> Log
-    SaveEdit --> Log
-    ExecuteDel --> Log
-    Log --> UpdateUI[Update UI]
-    UpdateUI --> Menu
-    Error --> Login
-
-3️⃣ Database Schema Design
-erDiagram
-    USERS ||--o{ INVENTORY_ITEMS : manages
-    USERS ||--o{ ACTIVITY_LOGS : performs
-    CATEGORIES ||--o{ INVENTORY_ITEMS : categorizes
-    INVENTORY_ITEMS ||--o{ ITEM_TRANSACTIONS : tracks
-    LOCATIONS ||--o{ INVENTORY_ITEMS : stores
-
-    USERS {
-        string _id
-        string email
-        string password
-        string role
-        string firstName
-        string lastName
-        date createdAt
-        date updatedAt
-        boolean isActive
+🖌 System Design
+mermaid
+Copy code
+classDiagram
+    class Frontend {
+        +React Components
+        +Pages
+        +State Management
+        +API Services
     }
 
-    INVENTORY_ITEMS {
-        string _id
-        string name
-        string description
-        string categoryId
-        string locationId
-        number quantity
-        number price
-        string status
-        string qrCode
-        date lastRestocked
+    class Backend {
+        +Express Routes
+        +Controllers
+        +Models (Mongoose)
+        +Middleware (Validation, Security)
     }
 
-4️⃣ Component Architecture (Frontend)
-graph TD
-    subgraph "React Application"
-        A[App Root] --> B[Routing]
-        B --> C[Dashboard]
-        B --> D[Inventory]
-        B --> E[Reports]
-        B --> F[Settings]
-        subgraph "Shared Components"
-            X[DataTable]
-            Y[SearchBar]
-            Z[Pagination]
-            W[Modal]
-        end
-        subgraph "State Management"
-            Q[Redux Store]
-            R[API Slice]
-            S[Inventory Slice]
-            T[Auth Slice]
-        end
-        subgraph "Custom Hooks"
-            U[useInventory]
-            V[useAuth]
-            W2[useWebSocket]
-        end
-    end
-    A --> Q
-    Q --> R
-    Q --> S
-    Q --> T
-    D --> U
-    C --> V
+    class Database {
+        +Collections: Items, Users
+        +Indexes
+        +Schema Validation
+    }
 
-5️⃣ API Architecture
-flowchart TD
-    subgraph "Client Layer"
-        A[Browser]
-        B[Mobile App]
-    end
+    Frontend --> Backend : API Calls
+    Backend --> Database : Read/Write
+Key Components:
 
-    subgraph "API Gateway"
-        D[Load Balancer]
-        E[Rate Limiter]
-        F[CORS Handler]
-        G[Logger]
-    end
+Frontend: React components, pages, and API service calls
 
-    subgraph "App Layer"
-        H[Auth Controller]
-        I[Inventory Controller]
-        J[Reports Controller]
-    end
+Backend: Routes, controllers, models, and middleware for validation/security
 
-    subgraph "Service Layer"
-        L[Auth Service]
-        M[Inventory Service]
-        N[Report Service]
-    end
+Database: MongoDB collections with schemas and indexes
 
-    subgraph "Data Layer"
-        P[MongoDB]
-        Q[Redis Cache]
-    end
+📁 Project Structure
+lua
+Copy code
+SmartInventory/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── styles/
+│   │   └── main.tsx
+│   ├── package.json
+│   ├── tailwind.config.js
+│   └── vite.config.ts
+│
+├── backend/
+│   ├── models/
+│   ├── routes/
+│   ├── controllers/
+│   ├── server.js
+│   ├── package.json
+│   └── addSampleData.js
+│
+└── README.md
+🚀 Quick Start
+Prerequisites
+Node.js 16+
 
-    A --> D
-    B --> D
-    D --> E --> F --> G
-    G --> H --> L --> P
-    G --> I --> M --> P
-    G --> J --> N --> P
-    M --> Q
+MongoDB Atlas account (free tier)
 
-6️⃣ Sequence Diagram – Item Checkout
-sequenceDiagram
-    participant U as User
-    participant FE as Frontend
-    participant API as Backend
-    participant DB as Database
-    participant WS as WebSocket
+npm or yarn
 
-    U->>FE: Click "Checkout Item"
-    FE->>API: POST /api/items/{id}/checkout
-    API->>DB: Find item
-    alt Invalid item
-        API-->>FE: Error
-    else Valid item
-        API->>DB: Update quantity
-        API->>DB: Log transaction
-        API->>WS: Broadcast update
-        WS->>FE: Refresh UI
-        FE-->>U: Success Message
-    end
-
-7️⃣ Deployment Architecture
-graph TB
-    subgraph "Production Environment"
-        subgraph LB
-            A[NGINX Load Balancer]
-        end
-        subgraph "App Servers"
-            B[App Server 1]
-            C[App Server 2]
-        end
-        subgraph "Database Cluster"
-            D[MongoDB Primary]
-            E[MongoDB Secondary]
-        end
-        subgraph "Cache"
-            F[Redis Cluster]
-        end
-        subgraph "Storage"
-            G[Cloud Storage S3]
-        end
-    end
-    A --> B
-    A --> C
-    B --> D
-    D --> E
-    B --> F
-    B --> G
-
-8️⃣ Security Architecture
-graph TD
-    subgraph "Client Layer"
-        A[Input Validation]
-        B[XSS/CSRF Prevention]
-    end
-    subgraph "App Layer"
-        C[JWT Validation]
-        D[Rate Limiting]
-        E[Input Sanitization]
-    end
-    subgraph "Data Layer"
-        F[Encryption at Rest]
-        G[Access Control]
-        H[Audit Logs]
-    end
-    A --> C
-    B --> C
-    C --> F
-    D --> G
-    E --> H
-
-🧱 Tech Stack
-Layer	Technologies
-
-Frontend	React 18, TypeScript, Tailwind CSS, Redux Toolkit, Chart.js
-
-Backend	Node.js, Express.js, MongoDB, Redis, Socket.io
-
-Security	JWT, bcrypt, Helmet, Rate Limiting
-
-DevOps	Docker, GitHub Actions, Jest, ESLint, Prettier
-
-⚡ Quick Start
-# Clone and install
-
+Installation
+bash
+Copy code
+# Clone the repository
 git clone https://github.com/ThebeLedwaba/SmartInventory.git
+cd SmartInventory
 
-cd SmartInventory && npm install
+# Setup Backend
+cd backend
+npm install
+cp .env.example .env
+# Edit .env with your MongoDB Atlas connection string
 
-cd client && npm install && cd ../server && npm install
-
-# Run
+# Setup Frontend
+cd ../frontend
+npm install
+Running the Application
+bash
+Copy code
+# Start Backend
+cd backend
 npm run dev
+# Server runs on http://localhost:5000
 
+# Start Frontend
+cd frontend
+npm run dev
+# Frontend runs on http://localhost:3000
+Adding Sample Data
+bash
+Copy code
+cd backend
+node addSampleData.js
+📊 API Endpoints
+Inventory Management
 
-Access:
-Frontend → http://localhost:3000
+GET /api/inventory - Get all items (with optional filtering)
 
-Backend → http://localhost:5000
+POST /api/inventory - Create a new item
 
-Swagger Docs → http://localhost:5000/api-docs
+PUT /api/inventory/:id - Update an item
 
-🧪 Testing
-npm test
-npm run test:coverage
+DELETE /api/inventory/:id - Delete an item
 
-🐳 Docker Deployment
-# Development
-docker-compose up -d
+System Health
 
-# Production
-docker-compose -f docker-compose.prod.yml up -d
+GET /api/health - Check API and database status
 
-🔒 Security Highlights
+GET /api/test - Basic API test endpoint
 
-JWT + Refresh Tokens
+🤝 Contributing
+Fork the repository
 
-Role-Based Access Control (RBAC)
+Create a feature branch: git checkout -b feature/amazing-feature
 
-HTTPS (TLS)
+Commit changes: git commit -m 'Add amazing feature'
 
-Input Validation & Sanitization
+Push to branch: git push origin feature/amazing-feature
 
-XSS & CSRF Protection
+Open a Pull Request
 
-Audit Logs
+📝 License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-🧑‍💻 Contributing
-git checkout -b feature/new-feature
-npm run lint && npm test
-git commit -m "feat: add new feature"
-git push origin feature/new-feature
+👨‍💻 Author
+Thebe Ledwaba
+GitHub: @ThebeLedwaba
+Project: Smart Inventory System
 
-📄 License
+🙏 Acknowledgments
+React team for the amazing framework
 
-Licensed under the MIT License – see the LICENSE
- file.
+Tailwind CSS for the utility-first CSS framework
 
-📬 Support
+MongoDB for the robust cloud database service
 
-📧 Email: thebeledwaba@gmail.com
+Vite team for the fast build tool
 
-🐛 Issues
-
-💬 Discussions
-
-📚 Documentation in /docs
+⭐ Star this repository if you found it helpful!
+```
