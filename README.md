@@ -12,68 +12,59 @@ A modern, full-stack inventory management solution built with React, Node.js, an
 ---
 
 ## 🌐 Live Demo
-
-[**View Demo Here**](https://your-demo-link.com) <!-- I will add them in due time  -->
+[**View Demo Here**](https://your-demo-link.com) <!-- Will added later-->
 
 ---
 
-## 🖼️ Screenshots <!-- I will add them in due time  -->
-
-| Dashboard                            | Inventory Management                 |
-| ------------------------------------ | ------------------------------------ |
+## 🖼️ Screenshots
+| Dashboard | Inventory Management |
+|-----------|--------------------|
 | ![Dashboard](./assets/dashboard.png) | ![Inventory](./assets/inventory.png) |
 
-> Replace the placeholders above with your actual screenshots.
+
 
 ---
 
 ## ✨ Features
 
 ### 📊 Dashboard Analytics
-
-- **Real-time Statistics**: Total items, in-stock, out-of-stock, and low stock counts
-- **Visual Metrics**: Beautiful cards with icons and color-coded status
-- **System Monitoring**: Live API and database connection status
+- Real-time Statistics: Total items, in-stock, out-of-stock, low stock
+- Visual Metrics: Cards with icons and color-coded status
+- System Monitoring: API and database connection status
 
 ### 📦 Inventory Management
-
-- **Complete CRUD Operations**: Create, read, update, and delete inventory items
-- **Advanced Filtering**: Search by name, filter by status and quantity
-- **Status Tracking**: In-stock, out-of-stock, and maintenance statuses
-- **Quantity Management**: Low stock alerts and inventory tracking
+- CRUD Operations: Create, read, update, delete items
+- Advanced Filtering: Search by name, filter by status and quantity
+- Status Tracking: In-stock, out-of-stock, maintenance
+- Quantity Management: Low stock alerts and inventory tracking
 
 ### 🎨 Modern UI/UX
-
-- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
-- **Professional Styling**: Tailwind CSS with beautiful gradients and animations
-- **Interactive Elements**: Hover effects, smooth transitions, and loading states
-- **TypeScript**: Full type safety across frontend and backend
+- Responsive Design: Desktop, tablet, and mobile friendly
+- Professional Styling: Tailwind CSS with gradients and animations
+- Interactive Elements: Hover effects, smooth transitions
+- TypeScript: Full type safety across frontend and backend
 
 ---
 
 ## 🛠 Technology Stack
 
 ### Frontend
-
-- **React 18** with TypeScript
-- **Tailwind CSS** for styling
-- **React Router** for navigation
-- **Vite** for fast development builds
+- React 18 + TypeScript
+- Tailwind CSS
+- React Router
+- Vite
 
 ### Backend
-
-- **Node.js** with Express.js
-- **TypeScript** for type safety
-- **MongoDB Atlas** (Cloud Database)
-- **Mongoose** ODM for database operations
-- **Express Validator** for input validation
+- Node.js + Express
+- TypeScript
+- MongoDB Atlas
+- Mongoose ODM
+- Express Validator
 
 ### DevOps & Tools
-
-- **MongoDB Atlas** for cloud database
-- **Environment Configuration** with dotenv
-- **CORS** enabled for cross-origin requests
-- **Security** with Helmet and rate limiting
+- Environment Configuration with dotenv
+- CORS enabled
+- Security with Helmet and rate limiting
 
 ---
 
@@ -87,17 +78,6 @@ flowchart TD
     B --> E[Business Logic]
     B --> F[API Health Check]
     A --> G[UI Pages]
-
-Description:
-
-Frontend communicates with the backend via RESTful APIs
-
-Backend handles business logic, data validation, and MongoDB operations
-
-MongoDB Atlas stores inventory data
-
-System includes real-time status monitoring and error handling
-
 🖌 System Design
 mermaid
 Copy code
@@ -113,25 +93,17 @@ classDiagram
         +Express Routes
         +Controllers
         +Models (Mongoose)
-        +Middleware (Validation, Security)
+        +Middleware
     }
 
     class Database {
-        +Collections: Items, Users
+        +Collections
         +Indexes
         +Schema Validation
     }
 
     Frontend --> Backend : API Calls
     Backend --> Database : Read/Write
-Key Components:
-
-Frontend: React components, pages, and API service calls
-
-Backend: Routes, controllers, models, and middleware for validation/security
-
-Database: MongoDB collections with schemas and indexes
-
 📁 Project Structure
 lua
 Copy code
@@ -170,13 +142,13 @@ Copy code
 git clone https://github.com/ThebeLedwaba/SmartInventory.git
 cd SmartInventory
 
-# Setup Backend
+# Backend setup
 cd backend
 npm install
 cp .env.example .env
 # Edit .env with your MongoDB Atlas connection string
 
-# Setup Frontend
+# Frontend setup
 cd ../frontend
 npm install
 Running the Application
@@ -185,12 +157,12 @@ Copy code
 # Start Backend
 cd backend
 npm run dev
-# Server runs on http://localhost:5000
+# http://localhost:5000
 
 # Start Frontend
 cd frontend
 npm run dev
-# Frontend runs on http://localhost:3000
+# http://localhost:3000
 Adding Sample Data
 bash
 Copy code
@@ -199,7 +171,7 @@ node addSampleData.js
 📊 API Endpoints
 Inventory Management
 
-GET /api/inventory - Get all items (with optional filtering)
+GET /api/inventory - Get all items (optional filtering)
 
 POST /api/inventory - Create a new item
 
@@ -211,7 +183,7 @@ System Health
 
 GET /api/health - Check API and database status
 
-GET /api/test - Basic API test endpoint
+GET /api/test - Basic test endpoint
 
 🤝 Contributing
 Fork the repository
@@ -220,12 +192,12 @@ Create a feature branch: git checkout -b feature/amazing-feature
 
 Commit changes: git commit -m 'Add amazing feature'
 
-Push to branch: git push origin feature/amazing-feature
+Push branch: git push origin feature/amazing-feature
 
 Open a Pull Request
 
 📝 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - see LICENSE file.
 
 👨‍💻 Author
 Thebe Ledwaba
@@ -233,13 +205,12 @@ GitHub: @ThebeLedwaba
 Project: Smart Inventory System
 
 🙏 Acknowledgments
-React team for the amazing framework
+React team
 
-Tailwind CSS for the utility-first CSS framework
+Tailwind CSS
 
-MongoDB for the robust cloud database service
+MongoDB
 
-Vite team for the fast build tool
+Vite
 
 ⭐ Star this repository if you found it helpful!
-```
