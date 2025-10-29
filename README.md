@@ -81,12 +81,13 @@ A modern, full-stack inventory management solution built with React, Node.js, an
 
 ```mermaid
 flowchart TD
-    A[Frontend: React + TypeScript] -->|API Requests| B[Backend: Node.js + Express]
-    B -->|CRUD Operations| C[Database: MongoDB Atlas]
-    B --> D[Validation & Security: Helmet, Rate Limiting]
+    A[Frontend React TS] -->|API| B[Backend Node.js Express]
+    B -->|CRUD| C[MongoDB Atlas]
+    B --> D[Validation & Security]
     B --> E[Business Logic]
     B --> F[API Health Check]
-    A --> G[UI: Dashboard, Inventory Pages]
+    A --> G[UI Pages]
+
 Description:
 
 Frontend communicates with the backend via RESTful APIs
