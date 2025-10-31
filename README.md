@@ -81,6 +81,8 @@ A modern, full-stack inventory management solution built with React, Node.js, an
 
 ## 🏗 System Architecture
 
+### System Flow
+
 ```mermaid
 flowchart TD
     A[Frontend React TS] -->|HTTP API| B[Backend Node.js Express]
@@ -91,31 +93,37 @@ flowchart TD
     A --> G[Dashboard UI]
     A --> H[Inventory Management]
     A --> I[Analytics Views]
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+    style E fill:#fce4ec
+Component Architecture
 classDiagram
     class Frontend {
         +React Components
-        +Dashboard Page
-        +Inventory Page
-        +API Services
-        +State Management
+        +TypeScript
+        +Dashboard UI
+        +Inventory Management
+        +Analytics Views
     }
-
+    
     class Backend {
-        +Express Server
-        +Inventory Routes
-        +Health Check Routes
-        +Middleware Stack
+        +Node.js Express
+        +Validation Middleware
+        +Business Logic Layer
+        +Health Check Endpoints
     }
-
+    
     class Database {
-        +Items Collection
-        +Indexes
-        +Schema Validation
-        +Aggregation Pipeline
+        +MongoDB Atlas Cloud
+        +Data Persistence
+        +Cloud Storage
     }
-
-    Frontend --> Backend : REST API Calls
-    Backend --> Database : MongoDB Operations
+    
+    Frontend --> Backend : HTTP API
+    Backend --> Database : MongoDB Driver
 📁 Project Structure
 text
 SmartInventory/
