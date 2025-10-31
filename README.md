@@ -91,7 +91,6 @@ flowchart TD
     A --> G[Dashboard UI]
     A --> H[Inventory Management]
     A --> I[Analytics Views]
-🖌 System Design
 classDiagram
     class Frontend {
         +React Components
@@ -197,6 +196,7 @@ cd frontend
 npm run dev
 # Frontend runs on http://localhost:3000
 Adding Sample Data
+
 bash
 cd backend
 node addSampleData.js
